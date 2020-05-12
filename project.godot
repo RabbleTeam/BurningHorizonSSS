@@ -16,6 +16,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Burning Horizon SSS"
+run/main_scene="res://World/TestWorld.tscn"
 config/icon="res://icon.png"
 
 [display]
@@ -49,6 +50,10 @@ texture={
 "stream": false,
 "svg/scale": 1.0
 }
+
+[layer_names]
+
+2d_physics/layer_1="World"
 
 [rendering]
 
