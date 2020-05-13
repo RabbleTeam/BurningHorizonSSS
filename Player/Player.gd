@@ -7,10 +7,10 @@ export (int) var engine_power = 800
 export (float) var friction = -1.9
 export (float) var drag = -0.001
 export (int) var braking = -450
-export (int) var max_speed_reverce = 1250
+export (int) var max_speed_reverce = 250
 export (int) var slip_speed = 400
 export (float) var traction_fast = 0.1
-export (float) var traction_slow = 0.7
+export (float) var traction_slow = 0.5
 
 var acceleration = Vector2.ZERO
 var velocity = Vector2.ZERO
