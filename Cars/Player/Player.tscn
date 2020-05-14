@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Cars/Car.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Cars/Player/Player.png" type="Texture" id=2]
+[ext_resource path="res://Cars/Player/Player.gd" type="Script" id=3]
+
+[sub_resource type="CapsuleShape2D" id=1]
+radius = 11.842
+height = 36.419
+
+[node name="Player" instance=ExtResource( 1 )]
+collision_layer = 2
+collision_mask = 5
+script = ExtResource( 3 )
+wheel_base = 60
+traction_slow = 0.3
+
+[node name="Body" parent="." index="0"]
+scale = Vector2( 0.35, 0.35 )
+texture = ExtResource( 2 )
+
+[node name="CollisionShape2D" parent="." index="1"]
+rotation = 1.5708
+shape = SubResource( 1 )
+
+[node name="RemoteTransform2D" type="RemoteTransform2D" parent="." index="4"]

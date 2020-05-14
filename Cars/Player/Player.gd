@@ -1,6 +1,11 @@
+#ДОЛЖНО НАСЛЕДОВАТЬ "res://Cars/Car.gd"!!!
 extends KinematicBody2D
 
 
+onready var gunTimer = $GunTimer
+onready var gun = $Gun
+
+export (PackedScene) var bullet
 export (int) var wheel_base = 70
 export (int) var steering_angle = 35
 export (int) var engine_power = 800
@@ -11,20 +16,33 @@ export (int) var max_speed_reverce = 250
 export (int) var slip_speed = 400
 export (float) var traction_fast = 0.1
 export (float) var traction_slow = 0.5
+export (float) var gun_cooldown
+export (int) var max_health
 
+var health = max_health
 var acceleration = Vector2.ZERO
 var velocity = Vector2.ZERO
 var steer_direction
+var can_shoot = true
+var alive = true
+
+signal health_changed
+signal dead
+
+
+func _ready():
+	gunTimer.wait_time = gun_cooldown
 
 
 func _physics_process(delta):
+	if not alive:
+		return
 	acceleration = Vector2.ZERO
 	get_input()
 	apply_friction()
 	calculate_steering(delta)
 	velocity += acceleration * delta
 	velocity = move_and_slide(velocity)
-
 
 func apply_friction():
 	if velocity.length() < 5:
@@ -35,6 +53,7 @@ func apply_friction():
 
 
 func get_input():
+	gun.look_at(get_global_mouse_position())
 	var turn = 0
 	if Input.is_action_pressed("right"):
 		turn += 1
