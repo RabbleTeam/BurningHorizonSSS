@@ -18,6 +18,7 @@ export (float) var traction_fast = 0.1
 export (float) var traction_slow = 0.5
 export (float) var gun_cooldown
 export (int) var max_health
+export (int) var gun_speed = 30
 
 var health = max_health
 var acceleration = Vector2.ZERO
@@ -32,6 +33,14 @@ signal dead
 
 func _ready():
 	gunTimer.wait_time = gun_cooldown
+
+#Работает криво, пофиксить
+func _process(delta):
+	#Мягкое вращение оружия
+#	var target_dir = (get_global_mouse_position() - global_position).normalized()
+#	var current_dir = Vector2(1, 0).rotated(gun.global_rotation)
+#	gun.global_rotation = current_dir.linear_interpolate(target_dir, gun_speed * delta).angle()
+	gun.look_at(get_global_mouse_position() + Vector2(90, 0))
 
 
 func _physics_process(delta):
@@ -53,7 +62,6 @@ func apply_friction():
 
 
 func get_input():
-	gun.look_at(get_global_mouse_position())
 	var turn = 0
 	if Input.is_action_pressed("right"):
 		turn += 1
