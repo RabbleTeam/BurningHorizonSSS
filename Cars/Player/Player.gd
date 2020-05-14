@@ -5,7 +5,7 @@ extends KinematicBody2D
 onready var gunTimer = $GunTimer
 onready var gun = $Gun
 
-export (PackedScene) var bullet
+export (PackedScene) var projectile
 export (int) var wheel_base = 70
 export (int) var steering_angle = 35
 export (int) var engine_power = 800
@@ -29,6 +29,7 @@ var alive = true
 
 signal health_changed
 signal dead
+signal shoot
 
 
 func _ready():
@@ -72,6 +73,8 @@ func get_input():
 		acceleration = transform.x * engine_power
 	if Input.is_action_pressed("backward"):
 		acceleration = transform.x * braking
+	if Input.is_action_just_pressed("attack"):
+		shoot()
 
 
 func calculate_steering(delta):
@@ -89,3 +92,15 @@ func calculate_steering(delta):
 	if d < 0:
 		velocity = -new_heading * min(velocity.length(), max_speed_reverce)
 	rotation = new_heading.angle()
+
+
+func shoot():
+	if can_shoot:
+		can_shoot = false
+		gunTimer.start()
+		var dir = Vector2(1, 0).rotated(gun.global_rotation)
+		emit_signal('shoot', projectile, $Gun/Muzzle.global_position, dir)
+
+
+func _on_GunTimer_timeout():
+	can_shoot = true
