@@ -1,6 +1,11 @@
+#ДОЛЖНО НАСЛЕДОВАТЬ "res://Cars/Car.gd"!!!
 extends KinematicBody2D
 
 
+onready var gunTimer = $GunTimer
+onready var gun = $Gun
+
+export (PackedScene) var projectile
 export (int) var wheel_base = 70
 export (int) var steering_angle = 35
 export (int) var engine_power = 800
@@ -11,20 +16,43 @@ export (int) var max_speed_reverce = 250
 export (int) var slip_speed = 400
 export (float) var traction_fast = 0.1
 export (float) var traction_slow = 0.5
+export (float) var gun_cooldown
+export (int) var max_health
+export (int) var gun_speed = 7
 
+var health = max_health
 var acceleration = Vector2.ZERO
 var velocity = Vector2.ZERO
 var steer_direction
+var can_shoot = true
+var alive = true
+
+signal health_changed
+signal dead
+signal shoot
+
+
+func _ready():
+	gunTimer.wait_time = gun_cooldown
+
+#Работает криво, пофиксить
+func _process(delta):
+	#Мягкое вращение оружия
+	var target_dir = (get_global_mouse_position() - global_position).normalized()
+	var current_dir = Vector2(1, 0).rotated(gun.global_rotation)
+	gun.global_rotation = current_dir.linear_interpolate(target_dir, gun_speed * delta).angle()
+	#gun.look_at(get_global_mouse_position())
 
 
 func _physics_process(delta):
+	if not alive:
+		return
 	acceleration = Vector2.ZERO
 	get_input()
 	apply_friction()
 	calculate_steering(delta)
 	velocity += acceleration * delta
 	velocity = move_and_slide(velocity)
-
 
 func apply_friction():
 	if velocity.length() < 5:
@@ -45,6 +73,8 @@ func get_input():
 		acceleration = transform.x * engine_power
 	if Input.is_action_pressed("backward"):
 		acceleration = transform.x * braking
+	if Input.is_action_just_pressed("attack"):
+		shoot()
 
 
 func calculate_steering(delta):
@@ -62,3 +92,15 @@ func calculate_steering(delta):
 	if d < 0:
 		velocity = -new_heading * min(velocity.length(), max_speed_reverce)
 	rotation = new_heading.angle()
+
+
+func shoot():
+	if can_shoot:
+		can_shoot = false
+		gunTimer.start()
+		var dir = Vector2(1, 0).rotated(gun.global_rotation)
+		emit_signal('shoot', projectile, $Gun/Muzzle.global_position, dir)
+
+
+func _on_GunTimer_timeout():
+	can_shoot = true
