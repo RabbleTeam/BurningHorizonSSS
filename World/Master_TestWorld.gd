@@ -14,7 +14,7 @@ func set_camera_limits():
 	$ViewportContainer/Viewport/TestWorld/Camera2D.limit_bottom = map_limits.end.y * map_cellsize.y
 
 
-func _on_Car_shoot(projectile, _position, _direction):
+func _on_Car_shoot(projectile, _position, _direction, target):
 	var p = projectile.instance()
 	add_child(p)
-	p.init(_position, _direction)
+	p.init(_position, _direction, target)
