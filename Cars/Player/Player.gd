@@ -19,6 +19,8 @@ export (float) var traction_slow = 0.5
 export (float) var gun_cooldown
 export (int) var max_health
 export (int) var gun_speed = 7
+export (int) var gun_shots = 1
+export (float, 0, 1.5) var gun_spread = 0.2
 
 var health = max_health
 var acceleration = Vector2.ZERO
@@ -73,8 +75,8 @@ func get_input():
 		acceleration = transform.x * engine_power
 	if Input.is_action_pressed("backward"):
 		acceleration = transform.x * braking
-	if Input.is_action_just_pressed("attack"):
-		shoot()
+	if Input.is_action_pressed("attack"):
+		shoot(gun_shots, gun_spread, null)
 
 
 func calculate_steering(delta):
@@ -94,12 +96,17 @@ func calculate_steering(delta):
 	rotation = new_heading.angle()
 
 
-func shoot():
+func shoot(num, spread, target = null):
 	if can_shoot:
 		can_shoot = false
 		gunTimer.start()
 		var dir = Vector2(1, 0).rotated(gun.global_rotation)
-		emit_signal('shoot', projectile, $Gun/Muzzle.global_position, dir)
+		if num > 1:
+			for each in range(num):
+				var a = -spread + each * (2 * spread) / (num - 1)
+				emit_signal('shoot', projectile, $Gun/Muzzle.global_position, dir.rotated(a), target)
+		else:
+			emit_signal('shoot', projectile, $Gun/Muzzle.global_position, dir, target)
 
 
 func _on_GunTimer_timeout():

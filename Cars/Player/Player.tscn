@@ -18,7 +18,7 @@ script = ExtResource( 3 )
 projectile = ExtResource( 6 )
 wheel_base = 60
 traction_slow = 0.3
-gun_cooldown = 0.4
+gun_cooldown = 0.1
 max_health = 100
 
 [node name="Body" parent="." index="0"]
